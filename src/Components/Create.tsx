@@ -1,7 +1,47 @@
+import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux";
+import {addUser} from '../redux/UserReducer'
+import { useNavigate } from "react-router-dom";
+import type { RootState } from "../Store/Store";
+
 const Create = () => {
+
+    const[formData, setFormData]=useState({
+        name:"",
+        email:""
+    })
+    const users=useSelector((state:RootState)=>state.users)
+    const dispatch=useDispatch()
+    const navigate=useNavigate()
+
+    const handleSubmit=(e:React.SubmitEvent<HTMLFormElement>)=>{
+        e.preventDefault()
+        const newUser = {
+            id: users.length + 1,
+            name: formData.name,
+            email: formData.email,
+        };
+
+        dispatch(addUser(newUser))
+        navigate('/')
+        setFormData({
+            name:"",
+            email:""
+        })
+        }
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
+    const {name, value} = e.target;
+    setFormData(prevData=>({
+        ...prevData,
+        [name]:value
+    }))
+}
+
     return (
         <div>
-            <div
+            <form
+            onSubmit={handleSubmit}
             className="
             rounded-md
             flex
@@ -24,6 +64,9 @@ const Create = () => {
                     <input
                     name='name'
                     id="name"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="Enter your name"
                     className="
                     border-2 rounded-md font-bold
@@ -34,6 +77,9 @@ const Create = () => {
                     <input
                     name="email"
                     id="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="Enter your email"
                     className="border-2 rounded-md font-bold"
                     />
@@ -57,7 +103,7 @@ const Create = () => {
                 ml-5
                 mb-5"
                 >Submit</button>
-            </div>
+            </form>
         </div>
     )
 }
